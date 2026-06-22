@@ -1,27 +1,39 @@
 import { MongoClient } from 'mongodb';
+import jwt from 'jsonwebtoken';
 
 const uri = process.env.MONGODB_URI || "mongodb+srv://cid_db:0T41jLeiSWAp9LPX@cluster0.xmdc6fu.mongodb.net/?appName=Cluster0"; 
 const client = new MongoClient(uri);
-
-export const handler = async (event, context) => {
+const JWT_SECRET = process.env.JWT_SECRET || "cid-ufs-super-secret-key-2026"; 
+export const handler = async (event) => {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Método não permitido" };
   }
 
   try {
-    const body = JSON.parse(event.body);
-    const { usuario, senha } = body;
+    const { usuario, senha } = JSON.parse(event.body);
 
     await client.connect();
     const database = client.db('cid_db');
     const collection = database.collection('usuarios');
 
+   
     const user = await collection.findOne({ usuario: usuario, senha: senha });
 
     if (user) {
+      
+      const token = jwt.sign(
+        { 
+          id: user._id, 
+          nome: user.nome, 
+          usuario: user.usuario 
+        },
+        JWT_SECRET,
+        { expiresIn: '24h' } 
+      );
+
       return {
         statusCode: 200,
-        body: JSON.stringify({ success: true, user: user })
+        body: JSON.stringify({ success: true, token: token })
       };
     } else {
       return {
@@ -30,10 +42,8 @@ export const handler = async (event, context) => {
       };
     }
   } catch (error) {
-    return { 
-      statusCode: 500, 
-      body: JSON.stringify({ error: "Erro interno no servidor" }) 
-    };
+    console.error("ERRO:", error);
+    return { statusCode: 500, body: JSON.stringify({ error: "Erro interno" }) };
   } finally {
     await client.close();
   }

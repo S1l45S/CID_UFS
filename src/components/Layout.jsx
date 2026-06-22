@@ -1,25 +1,36 @@
-// src/components/Layout.jsx
 import React from 'react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Layout({ children }) {
+  const { user, logout } = useAuth();
+
+  const obterIniciais = (nomeCompleto) => {
+    if (!nomeCompleto) return "US"; 
+    const partesNome = nomeCompleto.trim().split(/\s+/);
+    if (partesNome.length === 1) return partesNome[0].charAt(0).toUpperCase();
+    return (partesNome[0].charAt(0) + partesNome[partesNome.length - 1].charAt(0)).toUpperCase();
+  };
+
+  const iniciais = obterIniciais(user?.nome);
+
   return (
     <div className="min-h-screen bg-[#111111] font-plusjakarta text-white">
-      {/* HEADER INSTITUCIONAL (Inspirado na imagem) */}
       <header className="bg-[#001f5c] w-full px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
-        {/* Logo */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <span className="text-4xl font-extrabold text-white tracking-tighter">ufs</span>
           <div className="h-10 w-px bg-white/30"></div>
-          <div className="text-left text-[10px] text-white/90 uppercase font-light tracking-wide leading-tight">
-            Universidade<br />Federal de<br />Sergipe
-          </div>
-          <div className="ml-4 pl-4 border-l border-white/20">
-            <span className="text-xl font-bold text-[#3ab0ff]">CID</span>
+          <div className="flex flex-col text-left">
+            <span className="text-xl font-bold text-white/80 leading-none mb-1">CID</span>
+            <span className="text-[10px] text-white/80 uppercase font-light tracking-widest leading-none">
+              Central de Informação Discente
+            </span>
           </div>
         </div>
 
-        {/* Barra de Pesquisa Rápida e Perfil */}
+        {/* Barra de Pesquisa e Perfil Dinâmico */}
         <div className="flex items-center gap-4 w-full md:w-auto">
+          
+          {/* Barra de pesquisa mantida do seu design original */}
           <div className="relative w-full md:w-80">
             <input 
               type="text" 
@@ -30,11 +41,21 @@ export default function Layout({ children }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
           </div>
+          
+          {/* Avatar com Nome e Sobrenome e Botão Sair */}
           <div className="hidden md:flex items-center gap-3 bg-white/10 py-1.5 px-3 rounded-full cursor-pointer hover:bg-white/20 transition">
             <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#3ab0ff] to-[#0052cc] flex items-center justify-center font-bold text-xs">
-              SS
+              {iniciais}
             </div>
-            <span className="text-sm font-medium mr-2">Silas Santos</span>
+            
+            <span className="text-sm font-medium">{user?.nome || 'Carregando...'}</span>
+            
+            <button 
+              onClick={logout} 
+              className="ml-2 pl-2 border-l border-white/20 text-xs text-white/50 hover:text-red-400 uppercase font-bold transition-colors"
+            >
+              Sair
+            </button>
           </div>
         </div>
       </header>

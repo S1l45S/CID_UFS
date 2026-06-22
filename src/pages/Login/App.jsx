@@ -1,12 +1,13 @@
 import { useState } from "react";
-// Ajuste o caminho de importação dependendo de onde seu Login.jsx está
-import { authenticateUser } from "../../service/api"; 
+import { useAuth } from "../../context/AuthContext";
 
-export default function Login({ onLogin }) {
+export default function Login() {
   const [usuario, setUsuario] = useState('');
   const [senha, setSenha] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [text, setText] = useState("");
+  
+  const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -14,14 +15,16 @@ export default function Login({ onLogin }) {
     setText("");
 
     try {
-      // Usando o service abstraído
-      const user = await authenticateUser(usuario, senha);
+      const response = await fetch('/.netlify/functions/login', {
+        method: 'POST',
+        body: JSON.stringify({ usuario, senha })
+      });
 
-      if (user) {
-        // Sucesso: documento encontrado no banco
-        onLogin();
+      const data = await response.json();
+
+      if (data.success) {
+        login(data.token); 
       } else {
-        // Falha: documento não encontrado (usuário ou senha errados)
         setText("Usuário ou senha inválidos.");
       }
     } catch (error) {
