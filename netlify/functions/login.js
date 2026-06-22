@@ -1,9 +1,9 @@
 import { MongoClient } from 'mongodb';
 import jwt from 'jsonwebtoken';
 
-const uri = process.env.MONGODB_URI || "mongodb+srv://cid_db:0T41jLeiSWAp9LPX@cluster0.xmdc6fu.mongodb.net/?appName=Cluster0"; 
+const uri = process.env.MONGODB_URI
 const client = new MongoClient(uri);
-const JWT_SECRET = process.env.JWT_SECRET || "cid-ufs-super-secret-key-2026"; 
+const JWT_SECRET = process.env.JWT_SECRET
 export const handler = async (event) => {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Método não permitido" };
