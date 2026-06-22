@@ -1,33 +1,39 @@
+// src/App.jsx
 import { useState } from 'react';
 import Login from './pages/Login/App';
 import Layout from './components/Layout';
 import Dashboard from './pages/home/App';
-import FiltragemInteligente from './pages/Editais/App';
-import { useAuth } from './context/AuthContext';
+import Editais from './pages/Editais/App';
+import ExplicacaoCategoria from './pages/ExplicacaoCategoria/App'; 
+import { AuthProvider, useAuth } from './context/AuthContext';
 
 function AppRoutes() {
   const { user, loading } = useAuth();
-  const [currentPage, setCurrentPage] = useState('dashboard'); 
+  
+  const [paginaAtual, setPaginaAtual] = useState('inicio');
+  const [categoriaAtiva, setCategoriaAtiva] = useState('Todos');
+  const [dadosExplicacao, setDadosExplicacao] = useState(null); // Guarda os dados do card clicado
 
   if (loading) return <div className="h-screen flex items-center justify-center bg-black text-white">Carregando...</div>;
+  if (!user) return <Login />;
 
-  if (!user) {
-    return <Login />;
-  }
+  const navegarPara = (pagina, parametro = null) => {
+    setPaginaAtual(pagina);
+    if (pagina === 'oportunidades') {
+      setCategoriaAtiva(parametro || 'Todos');
+    } else if (pagina === 'explicacao') {
+      setDadosExplicacao(parametro);
+    }
+  };
 
   return (
-    <Layout>
-      <div className="mb-6 flex gap-4">
-        <button onClick={() => setCurrentPage('dashboard')} className="text-xs border p-1 border-white/20">Ir para Dashboard</button>
-        <button onClick={() => setCurrentPage('filtros')} className="text-xs border p-1 border-white/20">Ir para Filtros</button>
-      </div>
-      {currentPage === 'dashboard' ? <Dashboard /> : <FiltragemInteligente />}
+    <Layout paginaAtual={paginaAtual} navegarPara={navegarPara}>
+      {paginaAtual === 'inicio' && <Dashboard navegarPara={navegarPara} />}
+      {paginaAtual === 'explicacao' && <ExplicacaoCategoria dados={dadosExplicacao} navegarPara={navegarPara} />}
+      {paginaAtual === 'oportunidades' && <Editais categoriaInicial={categoriaAtiva} />}
     </Layout>
   );
 }
-
-
-import { AuthProvider } from './context/AuthContext';
 
 export default function App() {
   return (
