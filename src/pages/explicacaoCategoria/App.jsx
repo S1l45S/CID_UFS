@@ -1,4 +1,3 @@
-// src/pages/ExplicacaoCategoria/App.jsx
 import React from 'react';
 
 export default function ExplicacaoCategoria({ dados, navegarPara }) {
@@ -6,9 +5,9 @@ export default function ExplicacaoCategoria({ dados, navegarPara }) {
 
   return (
     <div className="animate-in slide-in-from-bottom-4 duration-500 max-w-4xl mx-auto">
-      
+
       {/* Botão Voltar */}
-      <button 
+      <button
         onClick={() => navegarPara('inicio')}
         className="mb-6 text-sm text-white/50 hover:text-white flex items-center gap-2 transition-colors"
       >
@@ -16,13 +15,13 @@ export default function ExplicacaoCategoria({ dados, navegarPara }) {
       </button>
 
       {/* Banner da Categoria */}
-      <div 
+      <div
         className="w-full h-64 rounded-3xl relative overflow-hidden mb-8 shadow-2xl"
         style={{ backgroundImage: `url(${dados.bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
       >
         <div className={`absolute inset-0 bg-gradient-to-br ${dados.colorGradient} mix-blend-multiply opacity-90`}></div>
         <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-transparent to-transparent"></div>
-        
+
         <div className="absolute bottom-0 left-0 p-8 md:p-12">
           <span className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-white mb-3 inline-block">
             {dados.setor}
@@ -54,12 +53,11 @@ export default function ExplicacaoCategoria({ dados, navegarPara }) {
           </ul>
         </section>
 
-        {/* Call to Action (CTA) */}
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col items-center text-center">
           <h3 className="text-xl font-bold text-white mb-2">Tudo certo? Veja as oportunidades disponíveis.</h3>
           <p className="text-sm mb-6 text-white/60">Acesse a central de editais com o filtro já aplicado para você.</p>
-          
-          <button 
+
+          <button
             onClick={() => navegarPara('oportunidades', dados.filtro)}
             className="px-8 py-4 bg-gradient-to-r from-[#3ab0ff] to-[#0052cc] text-white font-extrabold rounded-full hover:shadow-[0_0_20px_rgba(58,176,255,0.5)] hover:-translate-y-1 transition-all flex items-center gap-3 text-lg"
           >

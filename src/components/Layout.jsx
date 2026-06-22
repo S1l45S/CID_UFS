@@ -1,4 +1,3 @@
-// src/components/Layout.jsx
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 
@@ -16,7 +15,6 @@ export default function Layout({ children, paginaAtual, navegarPara }) {
 
   return (
     <div className="min-h-screen bg-[#111111] font-plusjakarta text-white">
-      {/* HEADER MANTIDO IGUAL AO ANTERIOR */}
       <header className="bg-[#001f5c] w-full px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
         <div className="flex items-center gap-4">
           <span className="text-4xl font-extrabold text-white tracking-tighter">ufs</span>
@@ -63,7 +61,6 @@ export default function Layout({ children, paginaAtual, navegarPara }) {
             INÍCIO
           </button>
           
-          {/* Aba de Editais/Oportunidades em Destaque */}
           <button 
             onClick={() => navegarPara('oportunidades')}
             className={`whitespace-nowrap px-5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-2 ${paginaAtual === 'oportunidades' ? 'bg-[#3ab0ff] text-black shadow-[0_0_15px_rgba(58,176,255,0.4)]' : 'bg-[#3ab0ff]/10 text-[#3ab0ff] hover:bg-[#3ab0ff]/20'}`}
