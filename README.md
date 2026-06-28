@@ -61,6 +61,7 @@ O sistema disponibiliza os seguintes recursos:
 
 A aplicação utiliza uma arquitetura híbrida baseada em **Serverless**, separando o frontend em React das funções de backend hospedadas no Netlify.
 
+```mermaid
 flowchart LR
 
     U[Aluno] --> R[React + Vite]
@@ -78,6 +79,7 @@ flowchart LR
     M --> N
 
     N --> R
+```
 
 # 🛠 Tecnologias Utilizadas
 
