@@ -66,7 +66,7 @@ Abaixo está a representação visual da arquitetura em camadas, detalhando o fl
 ```mermaid
 graph TD
     subgraph Camada_Apresentacao [Camada de Apresentação / Client-Side]
-        A[Aluno / Navegador] -->|Interage com a UI| B[SPA React + Vite]
+        A[Aluno / Navegador] -->|Interage com a UI| B[React]
         
         subgraph Core_Frontend [Estrutura Interna do Frontend]
             B --> C[Layout & Componentes Reutilizáveis]
