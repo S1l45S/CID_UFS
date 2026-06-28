@@ -57,28 +57,42 @@ O sistema disponibiliza os seguintes recursos:
 
 ---
 
-# 🏗 Arquitetura do Sistema
+# 🏗️ Arquitetura do Sistema (Visão Geral)
 
-A aplicação utiliza uma arquitetura híbrida baseada em **Serverless**, separando o frontend em React das funções de backend hospedadas no Netlify.
+O sistema foi desenvolvido seguindo o modelo de arquitetura **JAMstack** e **Serverless**, promovendo uma separação completa entre a camada de apresentação (Frontend) e a lógica de negócios/persistência (Backend e Banco de Dados). Isso garante alta escalabilidade, baixo custo de manutenção e performance otimizada.
+
+Abaixo está a representação visual da arquitetura em camadas, detalhando o fluxo de dados e os limites de cada componente do sistema:
 
 ```mermaid
-flowchart LR
+graph TD
+    subgraph Camada_Apresentacao [Camada de Apresentação / Client-Side]
+        A[Aluno / Navegador] -->|Interage com a UI| B[SPA React + Vite]
+        
+        subgraph Core_Frontend [Estrutura Interna do Frontend]
+            B --> C[Layout & Componentes Reutilizáveis]
+            B --> D[Rotas & Páginas]
+            B --> E[AuthContext / Estado de Autenticação]
+        end
+    end
 
-    U[Aluno] --> R[React + Vite]
+    subgraph Camada_Serverless [Camada de Computação / Serverless]
+        D -->|Consome endpoints /.netlify/functions/*| F[Netlify Functions]
+        E -->|Validação & Envio de Credenciais| F
+        F -->|Script: login.js| G[Gerador de Token JWT / Cookies]
+    end
 
-    R --> A[AuthContext]
+    subgraph Camada_Dados [Camada de Persistência / Dados]
+        G -->|Driver Nativo de Conexão NoSQL| H[(MongoDB Atlas)]
+    end
 
-    R --> C[Componentes]
-
-    R --> P[Páginas]
-
-    P --> N[Netlify Functions]
-
-    N --> M[(MongoDB)]
-
-    M --> N
-
-    N --> R
+    %% Estilização do Gráfico
+    classDef frontend fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1;
+    classDef serverless fill:#efebe9,stroke:#4e342e,stroke-width:2px,color:#3e2723;
+    classDef dados fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20;
+    
+    class A,B,C,D,E frontend;
+    class F,G serverless;
+    class H dados;
 ```
 
 # 🛠 Tecnologias Utilizadas
