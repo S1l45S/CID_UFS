@@ -1,18 +1,18 @@
 <div align="center">
 
-<img src="public/ufsLogo.svg" alt="Logo UFS" width="80" />
+<img src="public/ufsLogo.svg" alt="Logo UFS" width="80"/>
 
 # 🎓 CID - Central de Informação Discente
 
 **Projeto acadêmico desenvolvido para centralizar e simplificar o acesso às informações institucionais da Universidade Federal de Sergipe (UFS).**
 
 <p>
-  <img src="https://img.shields.io/badge/React-19.2-61DAFB?logo=react&logoColor=black" alt="React">
-  <img src="https://img.shields.io/badge/Vite-8.0-646CFF?logo=vite&logoColor=white" alt="Vite">
-  <img src="https://img.shields.io/badge/TailwindCSS-4.3-38B2AC?logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
-  <img src="https://img.shields.io/badge/MongoDB-7.3-47A248?logo=mongodb&logoColor=white" alt="MongoDB">
-  <img src="https://img.shields.io/badge/Netlify-Serverless-00C7B7?logo=netlify&logoColor=white" alt="Netlify">
-  <img src="https://img.shields.io/badge/Licença-MIT-green" alt="MIT License">
+  <img src="https://img.shields.io/badge/React-19.2-61DAFB?logo=react&logoColor=black" alt="React"/>
+  <img src="https://img.shields.io/badge/Vite-8.0-646CFF?logo=vite&logoColor=white" alt="Vite"/>
+  <img src="https://img.shields.io/badge/TailwindCSS-4.3-38B2AC?logo=tailwind-css&logoColor=white" alt="Tailwind CSS"/>
+  <img src="https://img.shields.io/badge/MongoDB-7.3-47A248?logo=mongodb&logoColor=white" alt="MongoDB"/>
+  <img src="https://img.shields.io/badge/Netlify-Serverless-00C7B7?logo=netlify&logoColor=white" alt="Netlify"/>
+  <img src="https://img.shields.io/badge/Licen%C3%A7a-MIT-green" alt="MIT License"/>
 </p>
 
 </div>
@@ -20,9 +20,9 @@
 ---
 
 > [!NOTE]
-> Este projeto foi desenvolvido com o objetivo de reduzir a dificuldade enfrentada pelos estudantes da Universidade Federal de Sergipe (UFS) em encontrar informações sobre auxílios estudantis, editais, programas de pesquisa, extensão e demais oportunidades acadêmicas.
+> O **CID (Central de Informação Discente)** é um projeto acadêmico desenvolvido para reunir, em uma única plataforma, informações sobre assistência estudantil, pesquisa, extensão e demais oportunidades oferecidas pela Universidade Federal de Sergipe (UFS).
 >
-> A plataforma reúne essas informações em um único ambiente, simulando a autenticação do SIGAA para proporcionar uma experiência familiar ao usuário.
+> A proposta é reduzir a dependência da divulgação informal ("boca a boca"), centralizando editais, programas e orientações em um ambiente intuitivo que simula a experiência de autenticação do SIGAA.
 
 ---
 
@@ -41,27 +41,27 @@
 
 # ✨ Funcionalidades
 
-O sistema oferece os seguintes recursos:
+O sistema disponibiliza os seguintes recursos:
 
-- 🔐 Autenticação simulando o acesso ao **SIGAA** utilizando **JWT**.
+- 🔐 Autenticação simulando o acesso ao SIGAA utilizando JWT.
 - 📊 Dashboard personalizado para o estudante.
-- 📖 Páginas explicativas sobre direitos estudantis e programas institucionais.
-- 🔎 Consulta e filtragem de editais por categoria.
+- 📖 Explicações detalhadas sobre programas e benefícios estudantis.
+- 🔎 Pesquisa e filtragem de editais por categoria.
 - 🎓 Informações sobre:
-  - Assistência Estudantil
+  - Assistência Estudantil (PROEST)
   - Pesquisa (PIBIC)
   - Extensão
   - Ligas Acadêmicas
   - Estágios
 - 🔍 Sistema de busca integrado.
 - 📱 Interface totalmente responsiva.
-- 🍪 Persistência da sessão através de Cookies/JWT.
+- 🍪 Persistência da autenticação através de Cookies e JWT.
 
 ---
 
 # 🏗 Arquitetura do Sistema
 
-O projeto utiliza uma arquitetura híbrida baseada em **React** no frontend e **Netlify Functions** no backend, comunicando-se com um banco de dados **MongoDB**.
+A aplicação utiliza uma arquitetura híbrida baseada em **Serverless**, separando o frontend em React das funções de backend hospedadas no Netlify.
 
 ```mermaid
 flowchart LR
@@ -69,76 +69,149 @@ flowchart LR
     U[Aluno] --> R[React + Vite]
 
     R --> A[AuthContext]
-    R --> P[Pages]
-    R --> C[Components]
+
+    R --> C[Componentes]
+
+    R --> P[Páginas]
 
     P --> N[Netlify Functions]
 
     N --> M[(MongoDB)]
 
     M --> N
+
     N --> R
-🛠 Tecnologias Utilizadas
-Frontend
-Categoria	Tecnologia
-Framework	React 19
-Build Tool	Vite 8
-CSS	Tailwind CSS 4
-Estado Global	Context API
-Autenticação	jwt-decode
-Backend
-Categoria	Tecnologia
-Runtime	Node.js
-API	Netlify Functions
-Banco de Dados	MongoDB
-Driver	MongoDB Driver
-Autenticação	JSON Web Token (JWT)
-Deploy
-Serviço	Utilização
-Netlify	Frontend + Serverless Functions
-⚙ Variáveis de Ambiente
+```
 
-Crie um arquivo .env na raiz do projeto contendo:
+---
 
-Variável	Descrição
-MONGODB_URI	String de conexão com o MongoDB
-JWT_SECRET	Chave utilizada para assinatura dos Tokens JWT
+# 🛠 Tecnologias Utilizadas
+
+## Frontend
+
+| Categoria | Tecnologia |
+|-----------|------------|
+| Framework | React 19 |
+| Build Tool | Vite 8 |
+| Estilização | Tailwind CSS 4 |
+| Gerenciamento de Estado | Context API |
+| Autenticação | jwt-decode |
+
+---
+
+## Backend
+
+| Categoria | Tecnologia |
+|-----------|------------|
+| Runtime | Node.js |
+| API | Netlify Functions |
+| Banco de Dados | MongoDB |
+| Driver | MongoDB Driver |
+| Autenticação | JSON Web Token (JWT) |
+
+---
+
+## Deploy
+
+| Serviço | Finalidade |
+|----------|------------|
+| Netlify | Hospedagem do Frontend e das Serverless Functions |
+
+---
+
+# ⚙ Variáveis de Ambiente
+
+Crie um arquivo `.env` na raiz do projeto.
+
+| Variável | Descrição |
+|----------|-----------|
+| `MONGODB_URI` | URI de conexão com o banco MongoDB |
+| `JWT_SECRET` | Chave utilizada para assinatura dos Tokens JWT |
 
 Exemplo:
 
+```env
 MONGODB_URI=sua_string_de_conexao
 JWT_SECRET=sua_chave_secreta
-🚀 Como Executar
-Pré-requisitos
-Node.js (LTS)
-MongoDB
-npm
-1. Clone o repositório
+```
+
+---
+
+# 🚀 Como Executar
+
+## Pré-requisitos
+
+- Node.js (versão LTS recomendada)
+- MongoDB
+- npm
+
+---
+
+## 1. Clone o repositório
+
+```bash
 git clone <url-do-repositório>
 cd CID_UFS
-2. Instale as dependências
+```
+
+---
+
+## 2. Instale as dependências
+
+```bash
 npm install
-3. Configure o ambiente
+```
 
-Crie o arquivo:
+---
 
-.env
+## 3. Configure o ambiente
 
-Com as variáveis:
+Crie um arquivo chamado `.env` na raiz do projeto.
 
+```env
 MONGODB_URI=
 JWT_SECRET=
-4. Execute em modo de desenvolvimento
+```
+
+---
+
+## 4. Execute em modo de desenvolvimento
+
+```bash
 npm run dev
-5. Gerar Build
+```
+
+---
+
+## 5. Gerar o build de produção
+
+```bash
 npm run build
-6. Visualizar Build
+```
+
+---
+
+## 6. Visualizar o build
+
+```bash
 npm run preview
+```
 
-Observação: Para executar as Netlify Functions localmente de forma integrada, utilize:
+---
 
+## Executando as Netlify Functions localmente
+
+Caso deseje executar o backend junto com o frontend:
+
+```bash
 netlify dev
-📁 Estrutura do Projeto
+```
+
+---
+
+# 📁 Estrutura do Projeto
+
+```text
 CID_UFS/
 ├── netlify/
 │   └── functions/
@@ -168,14 +241,32 @@ CID_UFS/
 ├── vite.config.js
 ├── .gitignore
 └── README.md
-📄 Licença
+```
 
-Este projeto está licenciado sob a licença MIT.
+---
 
-Consulte o arquivo LICENSE para mais informações.
+# 📄 Licença
 
-👨‍💻 Autor
+Este projeto está licenciado sob a licença **MIT**.
 
-Silas Santos
+Consulte o arquivo **LICENSE** para mais informações.
 
-Projeto desenvolvido como parte de atividades acadêmicas da Universidade Federal de Sergipe (UFS).
+---
+
+# 👨‍💻 Autor
+
+**Silas Santos**
+
+Projeto desenvolvido como parte das atividades acadêmicas da **Universidade Federal de Sergipe (UFS)**.
+
+---
+
+<div align="center">
+
+## ⭐ Gostou do projeto?
+
+Se este projeto foi útil para você, considere deixar uma **⭐** no repositório.
+
+Desenvolvido com ❤️ utilizando **React**, **Vite**, **Tailwind CSS**, **MongoDB** e **Netlify**.
+
+</div>
