@@ -59,32 +59,6 @@ O sistema disponibiliza os seguintes recursos:
 
 ---
 
-# 🏗 Arquitetura do Sistema
-
-A aplicação utiliza uma arquitetura híbrida baseada em **Serverless**, separando o frontend em React das funções de backend hospedadas no Netlify.
-
-```mermaid
-flowchart LR
-
-    U[Aluno] --> R[React + Vite]
-
-    R --> A[AuthContext]
-
-    R --> C[Componentes]
-
-    R --> P[Páginas]
-
-    P --> N[Netlify Functions]
-
-    N --> M[(MongoDB)]
-
-    M --> N
-
-    N --> R
-```
-
----
-
 # 🛠 Tecnologias Utilizadas
 
 ## Frontend
