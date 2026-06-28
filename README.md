@@ -181,13 +181,3 @@ Consulte o arquivo **LICENSE** para mais informações.
 Projeto desenvolvido como parte das atividades acadêmicas da **Universidade Federal de Sergipe (UFS)**.
 
 ---
-
-<div align="center">
-
-## ⭐ Gostou do projeto?
-
-Se este projeto foi útil para você, considere deixar uma **⭐** no repositório.
-
-Desenvolvido com ❤️ utilizando **React**, **Vite**, **Tailwind CSS**, **MongoDB** e **Netlify**.
-
-</div>
