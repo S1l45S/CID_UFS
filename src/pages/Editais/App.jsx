@@ -1,50 +1,123 @@
 import React, { useState, useEffect } from 'react';
+import { supabase } from '../../service/supabaseClient'; // Ajuste o caminho do seu client Supabase
 
 export default function Editais({ categoriaInicial }) {
   const [filtroAtivo, setFiltroAtivo] = useState(categoriaInicial || 'Todos');
   const [editalExpandidoId, setEditalExpandidoId] = useState(null);
+  
+  const [todosEditais, setTodosEditais] = useState([]);
+  const [categoriasDisponiveis, setCategoriasDisponiveis] = useState(['Todos']);
+  const [carregando, setCarregando] = useState(true);
 
+  // 1. Buscar categorias do banco de dados para popular a sidebar dinamicamente
   useEffect(() => {
-    setFiltroAtivo(categoriaInicial);
+    async function carregarCategorias() {
+      const { data, error } = await supabase.from("categoria").select("nome_categoria");
+      if (!error && data) {
+        setCategoriasDisponiveis(['Todos', ...data.map(c => c.nome_categoria)]);
+      }
+      console.log(error);
+      console.log(data)
+    }
+    carregarCategorias();
+  }, []);
+
+  // 2. Sincronizar o filtro quando a prop mudar
+  useEffect(() => {
+    setFiltroAtivo(categoriaInicial || 'Todos');
     setEditalExpandidoId(null);
   }, [categoriaInicial]);
 
-  const todosEditais = [
-    {
-      id: 1, tipo: 'Auxílio', titulo: 'Edital PROEST 04/2026 - Auxílio Manutenção', prazo: 'Encerra em 3 dias', valor: 'R$ 700,00', status: 'Aberto',
-      resumo: 'Este edital visa preencher 150 vagas para o Auxílio Manutenção. Requisitos: Renda per capita familiar inferior a 1,5 salário mínimo e estar cursando o primeiro ano. A documentação deve ser enviada unicamente via SIGAA.'
-    },
-    {
-      id: 2, tipo: 'Pesquisa', titulo: 'Seleção PIBIC - Monitoramento de Solos com IoT', prazo: 'Encerra em 15 dias', valor: 'R$ 700,00', status: 'Aberto',
-      resumo: 'Busca-se bolsista para atuar no laboratório de automação. Necessário conhecimento básico em C/C++ ou Python, e noções de microcontroladores (ESP32/Arduino). Dedicação de 20h semanais.'
-    },
-    {
-      id: 3, tipo: 'Estágio', titulo: 'Estágio DTI - Suporte Técnico e Redes', prazo: 'Encerra em 5 dias', valor: 'R$ 1.125,69', status: 'Aberto',
-      resumo: 'Vaga para estudantes de Sistemas de Informação ou correlatos. Atuação no suporte técnico aos laboratórios do campus. Requer cursar do 3º ao 6º período. Benefício inclui Auxílio Transporte.'
-    },
-  ];
+  // 3. Buscar editais e seus relacionamentos (Órgão e Categorias) do Supabase
+  useEffect(() => {
+    async function carregarEditais() {
+      setCarregando(true);
+      
+      // Consulta com Join (Relacionamento 1:N com orgao_emissor e N:M com categoria)
+      let query = supabase
+        .from('edital')
+        .select(`
+          id_edital,
+          codigo_edital,
+          nome_programa,
+          is_aberto,
+          prazo_final_inscricao,
+          itens_financiaveis,
+          escopo_objetivo,
+          sistema_link_submissao,
+          orgao_emissor (
+            sigla,
+            nome_orgao
+          ),
+          edital_categoria (
+            categoria (
+              nome_categoria
+            )
+          )
+        `);
 
-  const editaisFiltrados = filtroAtivo === 'Todos'
-    ? todosEditais
-    : todosEditais.filter(edital => edital.tipo === filtroAtivo);
+      // Se o filtro não for 'Todos', filtramos utilizando a tabela de junção
+      if (filtroAtivo !== 'Todos') {
+        // Buscamos primeiro os IDs dos editais que pertencem a essa categoria
+        const { data: relacoes } = await supabase
+          .from('edital_categoria')
+          .select('id_edital')
+          .textSearch('categoria.nome_categoria', filtroAtivo); // Ou filtro por ID dependendo da estrutura
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error('Erro ao buscar editais:', error.message);
+      } else if (data) {
+        // Mapeamos os dados para facilitar a exibição no componente
+        const editaisFormatados = data.map(edital => {
+          // Extrai as categorias do relacionamento N:M
+          const categorias = edital.edital_categoria?.map(ec => ec.categoria?.nome_categoria) || [];
+          
+          return {
+            id: edital.id_edital,
+            tipo: categorias[0] || 'Geral', // Pega a primeira categoria principal como tipo
+            categorias: categorias,
+            titulo: `${edital.codigo_edital} - ${edital.nome_programa}`,
+            prazo: edital.prazo_final_inscricao 
+              ? `Encerra em ${new Date(edital.prazo_final_inscricao).toLocaleDateString('pt-BR')}` 
+              : 'Prazo sob consulta',
+            valor: edital.itens_financiaveis || 'Ver edital',
+            status: edital.is_aberto ? 'Aberto' : 'Encerrado',
+            resumo: edital.escopo_objetivo,
+            orgao: edital.orgao_emissor?.sigla || 'Órgão Oficial',
+            linkSubmissao: edital.sistema_link_submissao
+          };
+        });
+
+        // Filtragem manual caso o backend traga todos e queiramos refinar no client por categoria
+        const editaisFiltradosPorCategoria = filtroAtivo === 'Todos'
+          ? editaisFormatados
+          : editaisFormatados.filter(e => e.categorias.includes(filtroAtivo));
+
+        setTodosEditais(editaisFiltradosPorCategoria);
+      }
+      setCarregando(false);
+    }
+
+    carregarEditais();
+  }, [filtroAtivo]);
 
   const alternarEdital = (id) => {
-    if (editalExpandidoId === id) {
-      setEditalExpandidoId(null);
-    } else {
-      setEditalExpandidoId(id);
-    }
+    setEditalExpandidoId(editalExpandidoId === id ? null : id);
   };
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 animate-in fade-in duration-500">
 
+      {/* Sidebar Dinâmica de Categorias */}
       <aside className="w-full lg:w-1/4 bg-white/5 border border-white/10 rounded-2xl p-6 h-fit backdrop-blur-sm">
         <h3 className="font-bold text-lg mb-6 text-[#3ab0ff]">Filtrar por</h3>
         <div className="space-y-6">
           <div>
             <label className="text-xs uppercase tracking-wider text-white/60 font-bold mb-3 block">Categoria</label>
-            {['Todos', 'Auxílio', 'Apoio', 'Pesquisa', 'Extensão', 'Estágio'].map(f => (
+            {categoriasDisponiveis.map(f => (
               <label key={f} className="flex items-center gap-3 mb-2 cursor-pointer group">
                 <input
                   type="radio"
@@ -62,6 +135,7 @@ export default function Editais({ categoriaInicial }) {
         </div>
       </aside>
 
+      {/* Seção de Exibição */}
       <section className="w-full lg:w-3/4 space-y-4">
         <div className="flex justify-between items-end mb-6">
           <div>
@@ -71,12 +145,14 @@ export default function Editais({ categoriaInicial }) {
             </p>
           </div>
           <span className="text-sm bg-white/10 border border-white/10 px-4 py-1.5 rounded-full font-bold">
-            {editaisFiltrados.length} encontrados
+            {carregando ? 'Carregando...' : `${todosEditais.length} encontrados`}
           </span>
         </div>
 
-        {editaisFiltrados.length > 0 ? (
-          editaisFiltrados.map(edital => (
+        {carregando ? (
+          <div className="text-center p-10 text-white/50">Carregando editais do banco de dados...</div>
+        ) : todosEditais.length > 0 ? (
+          todosEditais.map(edital => (
             <div key={edital.id} className={`bg-white/5 border transition-all rounded-2xl overflow-hidden ${editalExpandidoId === edital.id ? 'border-[#3ab0ff] bg-white/10' : 'border-white/10 hover:border-[#3ab0ff]/50 hover:bg-white/10'}`}>
 
               {/* Parte Visível Principal */}
@@ -84,10 +160,10 @@ export default function Editais({ categoriaInicial }) {
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <span className="text-[10px] uppercase font-bold bg-[#3ab0ff]/20 text-[#3ab0ff] px-2 py-0.5 rounded">
-                      {edital.tipo}
+                      {edital.orgao}
                     </span>
-                    <span className="text-[10px] uppercase font-bold bg-green-500/20 text-green-400 px-2 py-0.5 rounded flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span> {edital.status}
+                    <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded flex items-center gap-1 ${edital.status === 'Aberto' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${edital.status === 'Aberto' ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`}></span> {edital.status}
                     </span>
                   </div>
                   <h4 className="text-lg font-bold text-white mb-1">{edital.titulo}</h4>
@@ -120,12 +196,16 @@ export default function Editais({ categoriaInicial }) {
                   </p>
 
                   <div className="flex gap-4">
-                    <button className="px-5 py-2 bg-[#3ab0ff] text-black text-sm font-bold rounded-lg hover:bg-white transition-colors">
-                      Ler Edital Completo (PDF)
-                    </button>
-                    <button className="px-5 py-2 bg-green-500 text-black text-sm font-bold rounded-lg hover:bg-green-400 transition-colors">
-                      Fazer Inscrição
-                    </button>
+                    {edital.linkSubmissao && (
+                      <a 
+                        href={edital.linkSubmissao.startsWith('http') ? edital.linkSubmissao : `#`} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="px-5 py-2 bg-green-500 text-black text-sm font-bold rounded-lg hover:bg-green-400 transition-colors inline-block"
+                      >
+                        Fazer Inscrição ({edital.linkSubmissao})
+                      </a>
+                    )}
                   </div>
                 </div>
               )}
